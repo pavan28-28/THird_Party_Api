@@ -12,6 +12,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,13 +30,25 @@ public class BankDetailsService {
 
     @Cacheable("bankDetails")
     public List<BankDetail> getBankDetails() {
+    	System.out.println("excecuting call to db....");
         return bankDetailRepository.findAll();
     }
 
-    @Scheduled(fixedRate = 21600000) // 6 hours in milliseconds
+    @Scheduled(fixedRate = 100000) // 6 hours in milliseconds
     @CacheEvict(value = "bankDetails", allEntries = true)
     @CachePut("bankDetails")
-    public List<BankDetail> updateBankDetails() {
+//    public List<BankDetail> updateBankDetails() {
+    public void updateBankDetails() { 
+    	 LocalTime currentTime = LocalTime.now();
+         
+         // Extract hours, minutes, and seconds
+         int hour = currentTime.getHour();
+         int minute = currentTime.getMinute();
+         int second = currentTime.getSecond();
+         
+         // Print the current time
+         System.out.println("Current Time: " + hour + ":" + minute + ":" + second);
+         
         String response = restTemplate.getForObject(API_URL, String.class);
         Gson gson = new Gson();
         BankApiResponse apiResponse = gson.fromJson(Objects.requireNonNull(response), BankApiResponse.class);
@@ -43,11 +57,16 @@ public class BankDetailsService {
         
         List<BankDetail> existingBankDetails = bankDetailRepository.findAll();
         
+        System.out.println("Comparing live list with existing list...");
         if (!liveBankList.equals(existingBankDetails)) {
+        	System.out.println("****Mismatched found..****");
             bankDetailRepository.deleteAll();
             bankDetailRepository.saveAll(liveBankList);
+        }else {
+        	System.out.println("Existing list and live list are same....");
         }
 
-        return liveBankList;
+//        System.out.println("returning live list...");
+//        return liveBankList;
     }
 }

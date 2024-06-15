@@ -1,4 +1,4 @@
-package com.ThirdParty;
+package com.ThirdParty.Repo;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;

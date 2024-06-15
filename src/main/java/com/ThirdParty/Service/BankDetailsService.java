@@ -1,8 +1,8 @@
 package com.ThirdParty.Service;
 
-import com.ThirdParty.BankDetailRepository;
 import com.ThirdParty.Model.BankApiResponse;
 import com.ThirdParty.Model.BankDetail;
+import com.ThirdParty.Repo.BankDetailRepository;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
